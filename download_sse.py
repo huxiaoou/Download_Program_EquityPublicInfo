@@ -1,4 +1,9 @@
-from setup import *
+import os
+import sys
+import requests
+import datetime as dt
+import random
+import json
 
 """
 0.  download Public Information from Shanghai
@@ -13,9 +18,10 @@ def parse_content_text(t_raw_text: str, t_rid: int):
 
 
 report_date = sys.argv[1]
+save_dir = sys.argv[2]
 
 # set headers
-exchange_headers = {
+browser_headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36",
     "referer": "http://www.sse.com.cn/disclosure/diclosure/public/",
 }
@@ -28,7 +34,7 @@ download_link = "http://query.sse.com.cn/infodisplay/showTradePublicFile.do?json
 )
 
 # get response
-response = requests.get(url=download_link, headers=exchange_headers)
+response = requests.get(url=download_link, headers=browser_headers)
 
 # parse text
 clean_text = parse_content_text(t_raw_text=response.text, t_rid=rid)

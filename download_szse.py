@@ -1,15 +1,18 @@
+import os
+import sys
+import requests
 import time
-
-from setup import *
+import datetime as dt
 
 """
 0.  download Public Information from Shenzhen
 """
 
 report_date = sys.argv[1]
+save_dir = sys.argv[2]
 
 # set headers
-exchange_headers = {
+browser_headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36",
     "referer": "http://www.szse.cn/disclosure/deal/public/",
 }
@@ -23,7 +26,7 @@ for sector_type in ["a", "c"]:
     }[sector_type]
 
     # get response
-    response = requests.get(url=download_link, headers=exchange_headers)
+    response = requests.get(url=download_link, headers=browser_headers)
 
     # save text
     save_file = "{}.public_info.SZ-{}.txt".format(report_date, sector_type)
