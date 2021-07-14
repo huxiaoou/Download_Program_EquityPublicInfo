@@ -81,18 +81,16 @@ df["release_date"] = df["release_date"].map(lambda z: z[0:4] + z[5:7] + z[8:10])
 df["prop_to_existing"] = df["prop_to_existing"] * 100
 df = df[rename_mapper.values()]
 
-if bgn_date != end_date:
-    save_file = "forbidden_release.{}.{}.csv.gz".format(bgn_date, end_date)
-else:
-    save_file = "forbidden_release.{}.csv.gz".format(bgn_date)
-    df = df.drop(axis=1, labels=["release_date"])
-
-save_path = os.path.join(save_dir, save_file)
-df.to_csv(save_path, float_format="%.6f", compression="gzip", encoding="gb18030")
-
 if len(df) >= page_size:
     print("Warning! Length of downloaded data between {1} and {2} are larger than {0}, please try to split the period into more shorter ones".format(
         page_size, bgn_date, end_date
     ))
 else:
+    if bgn_date != end_date:
+        save_file = "forbidden_release.{}.{}.csv.gz".format(bgn_date, end_date)
+    else:
+        save_file = "forbidden_release.{}.csv.gz".format(bgn_date)
+        df = df.drop(axis=1, labels=["release_date"])
+    save_path = os.path.join(save_dir, save_file)
+    df.to_csv(save_path, float_format="%.6f", compression="gzip", encoding="gb18030")
     print(df)
