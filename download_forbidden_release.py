@@ -20,6 +20,7 @@ end_date = sys.argv[2]
 bgn_date_d10 = bgn_date[0:4] + "-" + bgn_date[4:6] + "-" + bgn_date[6:8]
 end_date_d10 = end_date[0:4] + "-" + end_date[4:6] + "-" + end_date[6:8]
 save_dir = sys.argv[3]
+page_size = 1000
 
 # set headers
 browser_headers = {
@@ -35,7 +36,7 @@ cmd_dict = {
     "cmd_str_query": "https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery{}_{}".format(rid, ts),
     "cmd_str_sort_col": "&sortColumns=FREE_DATE%2CCURRENT_FREE_SHARES",
     "cmd_str_sort_type": "&sortTypes=1%2C1",
-    "cmd_str_page_size": "&pageSize=1000",
+    "cmd_str_page_size": "&pageSize=".format(page_size),
     "cmd_str_page_number": "&pageNumber=1",
     "cmd_str_report_name": "&reportName=RPT_LIFT_STAGE",
     "cmd_str_columns": "&columns={}%2{}%2{}%2{}%2{}%2{}%2{}%2{}%2{}%2{}%2{}%2{}%2{}%2{}".format(
@@ -89,3 +90,10 @@ else:
 save_path = os.path.join(save_dir, save_file)
 df.to_csv(save_path, float_format="%.6f", compression="gzip", encoding="gb18030")
 print(df)
+
+if len(df) >= page_size:
+    print("Warning! Length of downloaded data between {1} and {2} are larger than {0}, please try to split the period into more shorter ones".format(
+        page_size, bgn_date, end_date
+    ))
+else:
+    print(df)
