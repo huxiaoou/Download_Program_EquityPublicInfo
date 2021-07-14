@@ -89,7 +89,6 @@ else:
 
 save_path = os.path.join(save_dir, save_file)
 df.to_csv(save_path, float_format="%.6f", compression="gzip", encoding="gb18030")
-print(df)
 
 if len(df) >= page_size:
     print("Warning! Length of downloaded data between {1} and {2} are larger than {0}, please try to split the period into more shorter ones".format(
