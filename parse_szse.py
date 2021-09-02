@@ -61,7 +61,7 @@ for sector_type in ["a", "c"]:
                 continue
 
             if net_line.find("日均换手率与前五个交易日的日均换手率的比值达到30倍，且换手率累计达20%的证券") == 0:
-                block_description += "日均换手率与前五个交易日的日均换手率的比值达到30倍，且换手率累计达20%的证券"
+                block_description += "，日均换手率与前五个交易日的日均换手率的比值达到30倍，且换手率累计达20%的证券"
                 continue
 
             p_tradeBlock.append(t_record_description=record_description, t_content_line=net_line)
