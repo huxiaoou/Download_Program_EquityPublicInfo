@@ -33,7 +33,7 @@ for sector_type in ["a", "c"]:
         next_line_is_block_description = False
         block_description = ""
         record_description = ""
-        block_manager = CBlockManager()
+        block_manager = CBlockManagerSZSE()
         p_tradeBlock = None
         for net_line in net_lines_book:
             if net_line[0:20] == "-" * 20:
@@ -45,8 +45,8 @@ for sector_type in ["a", "c"]:
                 next_line_is_block_description = False
                 continue
 
-            if is_title_line(t_net_line=net_line):
-                p_tradeBlock = CTradeBlockSZSE(t_title_line=net_line, t_block_description=block_description)
+            if is_title_line_szse(t_net_line=net_line):
+                p_tradeBlock = CTradeBlock(t_title_line=net_line, t_block_description=block_description)
                 block_manager.append(t_trade_block=p_tradeBlock)
                 continue
 
