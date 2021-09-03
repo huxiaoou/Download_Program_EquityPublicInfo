@@ -8,18 +8,6 @@ def is_title_line_szse(t_net_line: str) -> bool:
     return re.search("\(代码[0-9]{6}\)", t_net_line) is not None
 
 
-def is_title_line_sse(t_net_line: str) -> bool:
-    return re.search("证券代码: [0-9]{6} *证券简称: ", t_net_line) is not None
-
-
-def is_table_column_names_sse(t_net_line: str) -> bool:
-    return re.search("证券代码 *证券简称.*成交金额\(万元\)$", t_net_line) is not None
-
-
-def is_table_item_sse(t_net_line: str) -> bool:
-    return re.match("\([1-9]\)$", t_net_line) is not None
-
-
 def is_block_description_sse(t_net_line: str) -> bool:
     big_chs_digit = [
         "一、", "二、", "三、", "四、", "五、", "六、", "七、", "八、", "九、", "十、",
@@ -29,10 +17,32 @@ def is_block_description_sse(t_net_line: str) -> bool:
 
 
 def is_sub_title_sse(t_net_line: str) -> bool:
-    big_chs_digit = [
+    arabic_digit = [
         "1、", "2、", "3、", "4、", "5、",
     ]
-    return re.match("({})".format("|".join(big_chs_digit)), t_net_line) is not None
+    return re.match("({})".format("|".join(arabic_digit)), t_net_line) is not None
+
+
+def is_table_column_names_sse(t_net_line: str) -> bool:
+    # return re.search("证券代码 *证券简称.*成交金额\(万元\)$", t_net_line) is not None
+    return re.search("证券代码 *证券简称.*成交金额\(万元\)", t_net_line) is not None
+
+
+def is_table_item_sse(t_net_line: str) -> bool:
+    return re.match("\([0-9]+\) *[0-9]{6} ", t_net_line) is not None
+
+
+def is_sec_title_line_sse(t_net_line: str) -> bool:
+    return re.search("证券代码: [0-9]{6} *证券简称: ", t_net_line) is not None
+
+
+def is_sec_record_title_sse(t_net_line: str) -> bool:
+    sec_record_title = [
+        "买入营业部名称:",
+        "卖出营业部名称:",
+        "融资买入会员名称:",
+    ]
+    return re.match("({})".format("|".join(sec_record_title)), t_net_line) is not None
 
 
 class CTradeRecord(object):
@@ -48,7 +58,11 @@ class CTradeRecord(object):
             self.m_amt_s: float = float(words[2])
         elif t_market == "SSE":
             words = t_content_line.split()
-            if t_record_description == "买入营业部名称: ":
+            if t_record_description == "买入营业部名称:":
+                self.m_member_name: str = words[1]
+                self.m_amt_b: float = float(words[2])
+                self.m_amt_s: float = np.nan
+            elif t_record_description == "融资买入会员名称:":
                 self.m_member_name: str = words[1]
                 self.m_amt_b: float = float(words[2])
                 self.m_amt_s: float = np.nan
@@ -102,6 +116,9 @@ class CTradeBlock(object):
             if t_record_description == "买入营业部名称:":
                 self.m_max_b_records.append(CTradeRecord(t_content_line, t_market=self.m_market, t_record_description=t_record_description))
                 return 0
+            elif t_record_description == "融资买入会员名称:":
+                self.m_max_b_records.append(CTradeRecord(t_content_line, t_market=self.m_market, t_record_description=t_record_description))
+                return 0
             elif t_record_description == "卖出营业部名称:":
                 self.m_max_s_records.append(CTradeRecord(t_content_line, t_market=self.m_market, t_record_description=t_record_description))
                 return 0
@@ -136,8 +153,9 @@ class CTradeBlock(object):
         return records
 
 
-class CBlockManagerSZSE(object):
-    def __init__(self):
+class CBlockManager(object):
+    def __init__(self, t_market: str):
+        self.m_market: str = t_market
         self.m_parsed_blocks: List[CTradeBlock] = []
 
     def append(self, t_trade_block: CTradeBlock):
@@ -151,3 +169,6 @@ class CBlockManagerSZSE(object):
         res = pd.DataFrame(all_records)
         res = res[["异动类型", "标的代码", "标的名称", "会员", "排名类型", "买入金额", "卖出金额"]]
         return res
+
+    def get_market(self):
+        return self.m_market
