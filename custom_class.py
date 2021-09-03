@@ -4,16 +4,26 @@ import numpy as np
 import pandas as pd
 
 
+# --- for SZSE
 def is_title_line_szse(t_net_line: str) -> bool:
     return re.search("\(代码[0-9]{6}\)", t_net_line) is not None
 
 
+# --- for SSE
 def is_block_description_sse(t_net_line: str) -> bool:
-    big_chs_digit = [
-        "一、", "二、", "三、", "四、", "五、", "六、", "七、", "八、", "九、", "十、",
-        "十一、", "十二、", "十三、", "十四、", "十五、", "十六、", "十七、", "十八、", "十九、", "二十、",
-    ]
+    big_chs_digit = ["^{}、".format(z) for z in [
+        "一", "二", "三", "四", "五", "六", "七", "八", "九", "十",
+        "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十"
+    ]]
     return re.match("({})".format("|".join(big_chs_digit)), t_net_line) is not None
+
+
+def remove_big_chs_digit_sse(t_block_description: str):
+    big_chs_digit = ["^{}、".format(z) for z in [
+        "一", "二", "三", "四", "五", "六", "七", "八", "九", "十",
+        "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十"
+    ]]
+    return re.sub("({})".format("|".join(big_chs_digit)), "", t_block_description)
 
 
 def is_sub_title_sse(t_net_line: str) -> bool:
@@ -45,6 +55,7 @@ def is_sec_record_title_sse(t_net_line: str) -> bool:
     return re.match("({})".format("|".join(sec_record_title)), t_net_line) is not None
 
 
+# --- classes
 class CTradeRecord(object):
     def __init__(self, t_content_line: str, t_market: str, t_record_description: str):
         self.m_member_name: str = ""
@@ -96,7 +107,7 @@ class CTradeBlock(object):
             name_loc = t_title_line.find("证券简称: ")
             self.m_block_description = t_block_description
             self.m_wind_code = t_title_line[code_loc + 6:code_loc + 12] + ".SH"
-            self.m_chs_name = t_title_line[name_loc:]
+            self.m_chs_name = t_title_line[name_loc + 6:]
 
         self.m_max_b_records: List[CTradeRecord] = []
         self.m_max_s_records: List[CTradeRecord] = []

@@ -41,6 +41,7 @@ with open(raw_path, "r", encoding="utf-8") as f:
 
         if is_block_description_sse(t_net_line=net_line):  # "一、有价格涨跌幅限制的日收盘价格涨幅偏离值达到7%的前三只证券:"
             block_description = net_line[:-1]
+            block_description = remove_big_chs_digit_sse(t_block_description=block_description)
             print(net_line)
             continue
 
@@ -69,7 +70,7 @@ with open(raw_path, "r", encoding="utf-8") as f:
             print(net_line)
             continue
 
-        if (len(net_line) == 1) or (net_line == "上海证券交易所"):
+        if (len(net_line) == 1) or (net_line == "上海证券交易所"):  # end of file
             continue
 
         p_tradeBlock.append(t_record_description=record_description, t_content_line=net_line)

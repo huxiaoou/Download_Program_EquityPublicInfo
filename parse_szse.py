@@ -45,20 +45,20 @@ for sector_type in ["a", "c"]:
                 print(net_line)
                 continue
 
-            if is_title_line_szse(t_net_line=net_line):
+            if is_title_line_szse(t_net_line=net_line):  # "*ST金正(代码002470)              成交量:12329万份/万股  成交金额:34841万元"
                 p_tradeBlock = CTradeBlock(t_title_line=net_line, t_block_description=block_description, t_market=block_manager.get_market())
                 block_manager.append(t_trade_block=p_tradeBlock)
                 print(net_line)
                 continue
 
-            if net_line.find("异常期间") == 0:
+            if net_line.find("异常期间") == 0:  # "异常期间:2021/08/25至2021/08/27   累计涨幅偏离值:15.97%"
                 continue
 
-            if net_line in ["买入金额最大的前5名", "卖出金额最大的前5名"]:
+            if net_line in ["买入金额最大的前5名", "卖出金额最大的前5名"]:  # "买入金额最大的前5名" "卖出金额最大的前5名"
                 record_description = net_line
                 continue
 
-            if net_line.find("营业部或交易单元名称") == 0:
+            if net_line.find("营业部或交易单元名称") == 0:  # "营业部或交易单元名称                                  买入金额(元)  卖出金额(元)"
                 continue
 
             if net_line.find("日均换手率与前五个交易日的日均换手率的比值达到30倍，且换手率累计达20%的证券") == 0:
